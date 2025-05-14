@@ -1,96 +1,167 @@
 import 'package:flutter/material.dart';
+import 'home_page.dart'; // Importación de la pantalla principal (HomePage)
 
-void main() => runApp(const BudgetApp());
+// --------------------------------------------
+// PUNTO DE ENTRADA DE LA APLICACIÓN
+// --------------------------------------------
+void main() {
+  runApp(const MyApp());
+}
 
-class BudgetApp extends StatelessWidget {
-  const BudgetApp({super.key});
+// --------------------------------------------
+// CONFIGURACIÓN PRINCIPAL DE LA APP
+// --------------------------------------------
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'BUDGET APP',
-      home: const BudgetHome(),
-      debugShowCheckedModeBanner: false,
+      title: 'Budget App',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        useMaterial3: true,
+      ),
+      home: const LoginPage(), // Pantalla inicial
+      debugShowCheckedModeBanner: false, // Oculta la banda de debug
     );
   }
 }
 
-class BudgetHome extends StatefulWidget {
-  const BudgetHome({super.key});
+// --------------------------------------------
+// PANTALLA DE LOGIN (STATEFUL WIDGET)
+// --------------------------------------------
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<BudgetHome> createState() => _BudgetHomeState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _BudgetHomeState extends State<BudgetHome> {
-  final List<Map<String, dynamic>> _transactions = [];
-  final TextEditingController _amountController = TextEditingController();
-  String _type = 'Ingreso'; // Por defecto
+// --------------------------------------------
+// ESTADO Y LÓGICA DEL LOGIN
+// --------------------------------------------
+class _LoginPageState extends State<LoginPage> {
+  // Controladores para los campos de texto
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  
+  // Estado para controlar la visualización del spinner de carga
+  bool _isLoading = false;
 
-  void _addTransaction() {
-    final double? amount = double.tryParse(_amountController.text);
+  // ------------------------------------------
+  // MÉTODO PARA MANEJAR EL INICIO DE SESIÓN
+  // ------------------------------------------
+  void _login() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
 
-    if (amount == null || amount <= 0) return;
+    // VALIDACIÓN 1: Campos vacíos
+    if (email.isEmpty || password.isEmpty) {
+      _showErrorDialog(
+        title: 'Campos incompletos',
+        message: email.isEmpty && password.isEmpty
+            ? 'Por favor ingresa tu correo y contraseña.'
+            : email.isEmpty
+                ? 'Por favor ingresa tu correo electrónico.'
+                : 'Por favor ingresa tu contraseña.',
+      );
+      return;
+    }
 
-    setState(() {
-      _transactions.add({
-        'type': _type,
-        'amount': amount,
-        'date': DateTime.now(),
-      });
-      _amountController.clear();
-    });
+    // VALIDACIÓN 2: Formato de correo electrónico
+    if (!email.contains('@') || !email.contains('.')) {
+      _showErrorDialog(
+        title: 'Correo inválido',
+        message: 'Por favor ingresa un correo electrónico válido.',
+      );
+      return;
+    }
+
+    // Simulación de autenticación (carga)
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(seconds: 2)); // Espera simulada
+    setState(() => _isLoading = false);
+
+    // Navegación a la pantalla principal (HomePage)
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => HomePage()),
+    );
   }
 
+  // ------------------------------------------
+  // MOSTRAR DIÁLOGO DE ERROR (REUTILIZABLE)
+  // ------------------------------------------
+  void _showErrorDialog({required String title, required String message}) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ------------------------------------------
+  // INTERFAZ DE USUARIO (WIDGET BUILD)
+  // ------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('BUDGET APP')),
+      appBar: AppBar(title: const Text("Iniciar Sesión")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Formulario para ingresar monto y tipo
+            // Campo de correo electrónico
             TextField(
-              controller: _amountController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Monto'),
-            ),
-            DropdownButton<String>(
-              value: _type,
-              items: const [
-                DropdownMenuItem(value: 'Ingreso', child: Text('Ingreso')),
-                DropdownMenuItem(value: 'Egreso', child: Text('Egreso')),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _type = value!;
-                });
-              },
-            ),
-            ElevatedButton(
-              onPressed: _addTransaction,
-              child: const Text('Registrar'),
-            ),
-            const SizedBox(height: 20),
-            const Text('Transacciones registradas:', style: TextStyle(fontSize: 18)),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _transactions.length,
-                itemBuilder: (context, index) {
-                  final tx = _transactions[index];
-                  return ListTile(
-                    leading: Icon(
-                      tx['type'] == 'Ingreso' ? Icons.arrow_downward : Icons.arrow_upward,
-                      color: tx['type'] == 'Ingreso' ? Colors.green : Colors.red,
-                    ),
-                    title: Text('${tx['type']} - \$${tx['amount']}'),
-                    subtitle: Text(tx['date'].toString()),
-                  );
-                },
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: "Correo electrónico",
+                border: OutlineInputBorder(),
+                hintText: "ejemplo@correo.com",
               ),
-            )
+            ),
+
+            const SizedBox(height: 16),
+
+            // Campo de contraseña
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: "Contraseña",
+                border: OutlineInputBorder(),
+                hintText: "Ingresa tu contraseña",
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Botón de inicio de sesión o spinner
+            _isLoading
+                ? const CircularProgressIndicator(color: Colors.teal)
+                : ElevatedButton(
+                    onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
+                    ),
+                    child: const Text(
+                      "Iniciar Sesión",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
           ],
         ),
       ),
