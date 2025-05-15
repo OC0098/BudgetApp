@@ -1,158 +1,164 @@
+// Importación de paquetes de Flutter
 import 'package:flutter/material.dart';
-import 'home_page.dart'; // Importación de la pantalla principal (HomePage)
 
 // --------------------------------------------
-// PUNTO DE ENTRADA DE LA APLICACIÓN
+// PUNTO DE ENTRADA PRINCIPAL DE LA APLICACIÓN
 // --------------------------------------------
 void main() {
-  runApp(const MyApp());
+  // Inicia la aplicación con el widget BudgetApp
+  runApp(const BudgetApp());
 }
 
 // --------------------------------------------
-// CONFIGURACIÓN PRINCIPAL DE LA APP
+// CONFIGURACIÓN PRINCIPAL DE LA APP (WIDGET RAÍZ)
 // --------------------------------------------
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BudgetApp extends StatelessWidget {
+  const BudgetApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Budget App',
+      title: 'BUDGET APP', // Nombre de la aplicación
+      debugShowCheckedModeBanner: false, // Oculta la etiqueta de debug
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo), // Tema principal
+        useMaterial3: true, // Habilita Material 3
       ),
-      home: const LoginPage(), // Pantalla inicial
-      debugShowCheckedModeBanner: false, // Oculta la banda de debug
+      home: const LoginScreen(), // Pantalla inicial
     );
   }
 }
 
 // --------------------------------------------
-// PANTALLA DE LOGIN (STATEFUL WIDGET)
+// PANTALLA DE INICIO DE SESIÓN (STATEFUL WIDGET)
 // --------------------------------------------
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 // --------------------------------------------
-// ESTADO Y LÓGICA DEL LOGIN
+// ESTADO Y LÓGICA DE LA PANTALLA DE LOGIN
 // --------------------------------------------
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
   // Controladores para los campos de texto
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  
-  // Estado para controlar la visualización del spinner de carga
-  bool _isLoading = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   // ------------------------------------------
   // MÉTODO PARA MANEJAR EL INICIO DE SESIÓN
   // ------------------------------------------
-  void _login() async {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
+  void _login() {
+    // Obtiene y limpia los valores de los campos
+    String email = _emailController.text.trim();
+    String password = _passwordController.text;
 
-    // VALIDACIÓN 1: Campos vacíos
+    // Validación de campos vacíos
     if (email.isEmpty || password.isEmpty) {
-      _showErrorDialog(
-        title: 'Campos incompletos',
-        message: email.isEmpty && password.isEmpty
-            ? 'Por favor ingresa tu correo y contraseña.'
-            : email.isEmpty
-                ? 'Por favor ingresa tu correo electrónico.'
-                : 'Por favor ingresa tu contraseña.',
+      // Mensaje dinámico según el campo faltante
+      String message = email.isEmpty
+          ? 'Por favor ingresa tu correo electrónico.'
+          : 'Por favor ingresa tu contraseña.';
+
+      // Muestra diálogo de error
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Campos incompletos"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
       );
       return;
     }
 
-    // VALIDACIÓN 2: Formato de correo electrónico
-    if (!email.contains('@') || !email.contains('.')) {
-      _showErrorDialog(
-        title: 'Correo inválido',
-        message: 'Por favor ingresa un correo electrónico válido.',
-      );
-      return;
-    }
+    // (FUTURO): Aquí irá la lógica de autenticación con backend
 
-    // Simulación de autenticación (carga)
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2)); // Espera simulada
-    setState(() => _isLoading = false);
-
-    // Navegación a la pantalla principal (HomePage)
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => HomePage()),
+    // Muestra notificación de éxito
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Inicio de sesión exitoso")),
     );
   }
 
   // ------------------------------------------
-  // MOSTRAR DIÁLOGO DE ERROR (REUTILIZABLE)
-  // ------------------------------------------
-  void _showErrorDialog({required String title, required String message}) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ------------------------------------------
-  // INTERFAZ DE USUARIO (WIDGET BUILD)
+  // CONSTRUCCIÓN DE LA INTERFAZ DE USUARIO
   // ------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Iniciar Sesión")),
+      // Barra superior
+      appBar: AppBar(
+        title: const Text("BUDGET APP"),
+        backgroundColor: Colors.indigo[900], // Color de fondo
+        foregroundColor: Colors.white, // Color del texto/iconos
+      ),
+      
+      // Cuerpo de la pantalla
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+          
+          // Imagen de login
+          Image.asset(
+          'Imagenes/Imagen_finanzas_login.png',
+          height: 200,
+          ),
+
+          const SizedBox(height: 20), // Espacio entre iamgen y bienvenida
+
+            // Mensaje de bienvenida
+            const Text(
+              "Bienvenido a BUDGET APP, inicia sesión", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 20,), // Espaciador
+
             // Campo de correo electrónico
             TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress, // Teclado optimizado para emails
               decoration: const InputDecoration(
                 labelText: "Correo electrónico",
-                border: OutlineInputBorder(),
-                hintText: "ejemplo@correo.com",
+                border: OutlineInputBorder(), // Borde con estilo Material
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20), // Espaciador
 
             // Campo de contraseña
+            TextField(
+              controller: _passwordController,
+              obscureText: true, // Oculta el texto para contraseñas
+              decoration: const InputDecoration(
+                labelText: "Contraseña",
+                border: OutlineInputBorder(),
+              ),
+            ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30), // Espaciador más grande
 
-            // Botón de inicio de sesión o spinner
-            _isLoading
-                ? const CircularProgressIndicator(color: Colors.teal)
-                : ElevatedButton(
-                    onPressed: _login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 15),
-                    ),
-                    child: const Text(
-                      "Iniciar Sesión",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
+            // Botón de inicio de sesión
+            ElevatedButton(
+              onPressed: _login, // Método que se ejecuta al presionar
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo[900], // Color de fondo
+                foregroundColor: Colors.white, // Color del texto
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12), // Bordes redondeados
+                ),
+              ),
+              child: const Text("Iniciar Sesión"),
+            ),
           ],
         ),
       ),
