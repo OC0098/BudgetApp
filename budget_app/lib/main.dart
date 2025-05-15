@@ -135,15 +135,6 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 16),
 
             // Campo de contraseña
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "Contraseña",
-                border: OutlineInputBorder(),
-                hintText: "Ingresa tu contraseña",
-              ),
-            ),
 
             const SizedBox(height: 20),
 
