@@ -21,7 +21,7 @@ class BudgetApp extends StatelessWidget {
       title: 'BUDGET APP', // Nombre de la aplicación
       debugShowCheckedModeBanner: false, // Oculta la etiqueta de debug
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo), // Tema principal
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 102, 114, 179)), // Tema principal
         useMaterial3: true, // Habilita Material 3
       ),
       home: const LoginScreen(), // Pantalla inicial
