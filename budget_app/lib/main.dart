@@ -80,6 +80,26 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+ // Expresión regular para validar el formato del correo
+  bool correoValido = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email);
+
+  if (!correoValido) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Correo inválido"),
+        content: const Text("Por favor ingresa un correo electrónico válido."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+    return;
+  }
+
     // Muestra notificación de éxito
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Inicio de sesión exitoso")),
