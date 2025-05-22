@@ -1,6 +1,6 @@
 // Importación de paquetes de Flutter
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'paginas/home_page.dart';
 
 // --------------------------------------------
 // PUNTO DE ENTRADA PRINCIPAL DE LA APLICACIÓN
