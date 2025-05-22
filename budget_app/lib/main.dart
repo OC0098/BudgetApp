@@ -1,5 +1,6 @@
 // Importación de paquetes de Flutter
 import 'package:flutter/material.dart';
+import 'package:budget_app/home_page.dart';
 
 // --------------------------------------------
 // PUNTO DE ENTRADA PRINCIPAL DE LA APLICACIÓN
@@ -80,6 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     // (FUTURO): Aquí irá la lógica de autenticación con backend
+
+    Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(builder: (context) => const HomePage()),
+);
 
     // Muestra notificación de éxito
     ScaffoldMessenger.of(context).showSnackBar(
