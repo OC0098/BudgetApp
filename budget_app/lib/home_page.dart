@@ -32,10 +32,7 @@ class HomePage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text(
-              'Distribución de Gastos',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            
             const SizedBox(height: 20),
             SizedBox(
               height: 200,
